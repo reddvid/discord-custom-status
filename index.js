@@ -8,9 +8,13 @@ let previousApp;
 callback = function (window) {
   try {
     console.log(`App: ${window.app}`);
-    if (window.app != previousApp && window.app != "") {
+    console.log(`Title: ${window.title}`);
+    if (window.app != previousApp) {
       previousApp = window.app;
       updateStatus(window.app);
+    } else if (window.app == "") {
+      previousApp = window.title;
+      updateStatus(window.title);
     }
   } catch (err) {
     console.log(`Callback error: ${err}`);
