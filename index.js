@@ -4,25 +4,36 @@ const monitor = require("./active-window");
 const URL = `https://discord.com/api/v10/users/@me/settings`;
 
 let previousApp;
+let customStatus;
+let customEmoji;
 
-callback = function (window) {
-  try {
-    console.log(`App: ${window.app}`);
-    console.log(`Title: ${window.title}`);
-    if (window.app != previousApp) {
-      previousApp = window.app;
-      updateStatus(window.app);
-    } else if (window.app == "") {
-      previousApp = window.title;
-      updateStatus(window.title);
-    }
-  } catch (err) {
-    console.log(`Callback error: ${err}`);
-  }
-};
+const args = process.argv.slice(2);
 
-//Get the current active window
-monitor.getActiveWindow(callback, -1, config.interval); // (callback, # of requests (-1 inf), interval in seconds)
+switch (args) {
+  default: // (callback, # of requests (-1 inf), interval in seconds)
+    callback = function (window) {
+      try {
+        console.log(`App: ${window.app}`);
+        console.log(`Title: ${window.title}`);
+        if (window.app != previousApp) {
+          previousApp = window.app;
+          updateStatus(window.app);
+        } else if (window.app == "") {
+          previousApp = window.title;
+          updateStatus(window.title);
+        }
+      } catch (err) {
+        console.log(`Callback error: ${err}`);
+      }
+    };
+
+    monitor.getActiveWindow(callback, -1, config.interval);
+    break;
+  case ("book", "read", "reading"):
+    customStatus = "Reading a physical book";
+    customEmoji = "📖";
+    updateStatus("custom");
+}
 
 /* Update Status */
 function updateStatus(appName) {
@@ -36,8 +47,11 @@ function updateStatus(appName) {
         },
         json: {
           custom_status: {
-            text: `${config.activityName} ${appName}`,
-            emoji_name: config.emojiName,
+            text:
+              appName === "custom"
+                ? customStatus
+                : `${config.activityName} ${appName}`,
+            emoji_name: appName === "custom" ? customEmoji : config.emojiName,
           },
         },
       },
@@ -52,5 +66,5 @@ function updateStatus(appName) {
         console.log("Updated status");
       }
     );
-  });
+  }).catch((e) => console.log(e));
 }
