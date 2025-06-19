@@ -1,6 +1,0 @@
-{
-  "token": "YOUR_DISCORD_TOKEN",
-  "activityName": "VERB_OR_ANYTHING",
-  "emojiName": "🎯",
-  "interval": "GET_APPNAME_TICK_INTERVAL_IN_SECONDS"
-}
