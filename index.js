@@ -2,9 +2,6 @@ const request = require('request');
 const config = require('./config.json');
 const monitor = require('./active-window');
 const URL = `https://discord.com/api/v10/users/@me/settings`;
-const { REST } = require('@discordjs/rest');
-const { Routes } = require('discord-api-types/v10');
-const { Client, Intents, MessageEmbed, Collection } = require('discord.js');
 
 let previousApp;
 let previousTitle;
@@ -18,24 +15,26 @@ switch (args) {
       try {
         console.log(`App: ${window.app}`);
         console.log(`Title: ${window.title}`);
+
+        if (previousApp == window.app || previousTitle == window.title) {
+          return;
+        }
+
         if (
-          (window.app != previousApp || window.title != previousTitle) &&
-          !window.app.includes('Microsoft')
+          window.app == '' ||
+          window.app.includes('Microsoftr Windowsr Operating System')
         ) {
-          previousApp = window.app;
-          previousTitle = window.title;
-          updateStatus(window.app);
-        } else if (window.app != previousApp || window.title != previousTitle) {
-          previousApp = window.app;
-          previousTitle = window.title;
-          updateStatus(window.app);
-        } else if (
-          (window.app == '' || window.app.includes('Microsoft')) &&
-          (window.app != previousApp || window.title != previousTitle)
-        ) {
+          // Use title
           previousTitle = window.title;
           previousApp = window.app;
+          // Update status
           updateStatus(window.title);
+        } else {
+          // Use app name
+          previousTitle = window.title;
+          previousApp = window.app;
+          // Update status
+          updateStatus(window.app);
         }
       } catch (err) {
         console.log(`Callback error: ${err}`);
